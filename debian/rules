@@ -1,4 +1,17 @@
 #!/usr/bin/make -f
 
+include /usr/share/dpkg/architecture.mk
+include /usr/share/dpkg/pkg-info.mk
+
+ifneq (,$(filter $(DEB_HOST_ARCH), armel mips mipsel powerpc))
+	LIBS += -latomic
+	export LIBS
+endif
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
 %:
 	dh $@
+
+override_dh_auto_build:
+	dh_auto_build -- WITH_LUAJIT=/usr WITH_OPENSSL=/usr VER=debian/$(DEB_VERSION)
